@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+// Hello
+
 public class App {
 
 	static long proximoParticipanteId = 1;
