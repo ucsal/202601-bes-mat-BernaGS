@@ -5,6 +5,8 @@ src/
 │ └── br/com/ucsal/olimpiadas/
 │ ├── App.java
 │ ├── Participante.java
+| ├── NotaCalculator.java
+| ├── NotaAcertosCalculator.java
 │ ├── Prova.java
 │ ├── Questao.java
 │ ├── Resposta.java
@@ -26,7 +28,17 @@ src/
 - Foram criadas classes específicas para gerenciar o armazenamento e recuperação de cada entidade:  
   `ParticipanteRepository`, `ProvaRepository`, `QuestaoRepository`, `TentativaRepository`.  
 - Essas classes assumiram a responsabilidade de manter as listas em memória e controlar a geração automática de IDs.  
-- A classe `App` perdeu a responsabilidade de persistência e passou a delegar essas operações aos repositórios.  
+- A classe `App` perdeu a responsabilidade de persistência e passou a delegar essas operações aos repositórios.
+
+**Mudanças realizadas:**
+- Criadas as classes:
+  - `ParticipanteRepository`: gerencia a lista e os IDs de `Participante`.
+  - `ProvaRepository`: gerencia a lista e os IDs de `Prova`.
+  - `QuestaoRepository`: gerencia a lista e os IDs de `Questao`.
+  - `TentativaRepository`: gerencia a lista e os IDs de `Tentativa`.
+- A classe `App` passou a utilizar esses repositórios, removendo as listas estáticas e os contadores de ID.
+- Todos os métodos que antes manipulavam diretamente as listas (`participantes`, `provas`, `questoes`, `tentativas`) agora delegam as operações aos repositórios.
+- O comportamento funcional permanece inalterado; apenas a organização do código foi melhorada.
 
 **Resultado:**  
 - A classe `App` agora só se preocupa com o fluxo da aplicação e interação.  
@@ -37,7 +49,17 @@ src/
 
 ### 2. **O** – *Open/Closed Principle* (OCP)
 
+**Aplicação:**  
+O cálculo da nota estava diretamente implementado dentro da classe `App` (método `calcularNota`). Para permitir que novas formas de pontuação possam ser adicionadas sem modificar o código existente, extraímos essa lógica para uma interface.
 
+**Mudanças realizadas:**
+- Criada a interface `NotaCalculator` com o método `calcular(Tentativa)`.
+- Criada a implementação concreta `NotaAcertosCalculator`, que reflete a regra original (número de acertos).
+- A classe `App` passou a utilizar uma instância de `NotaCalculator` (via campo estático) em vez de chamar diretamente o método `calcularNota`.
+- O método `calcularNota` foi removido de `App`.
+
+**Resultado:**
+A classe `App` agora está fechada para modificações em relação à lógica de pontuação. Se no futuro quisermos adicionar uma nova forma de calcular nota (por exemplo, nota ponderada), basta criar uma nova classe implementando `NotaCalculator` e substituir a instância em `App`, sem alterar o código da aplicação principal.
 
 ---
 
@@ -64,6 +86,7 @@ src/
 | Commit | Descrição | Arquivos Alterados |
 |--------|-----------|---------------------|
 | 1 | refactor: extrair repositórios para gerenciamento de dados (SRP) | `App.java`, `ParticipanteRepository.java`, `ProvaRepository.java`, `QuestaoRepository.java`, `TentativaRepository.java` |
+| 2 | **OCP:** Extração do cálculo de nota para interface | `App.java`, `NotaCalculator.java`, `NotaAcertosCalculator.java` |
 
 ---
 

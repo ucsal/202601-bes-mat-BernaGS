@@ -4,11 +4,14 @@ import java.util.Scanner;
 
 public class App {
 
-    
+    // Repositórios
     static ParticipanteRepository participanteRepository = new ParticipanteRepository();
     static ProvaRepository provaRepository = new ProvaRepository();
     static QuestaoRepository questaoRepository = new QuestaoRepository();
     static TentativaRepository tentativaRepository = new TentativaRepository();
+
+    // Calculadora de nota (OCP)
+    private static final NotaCalculator notaCalculator = new NotaAcertosCalculator();
 
     private static final Scanner in = new Scanner(System.in);
 
@@ -174,17 +177,9 @@ public class App {
 
         tentativaRepository.salvar(tentativa);
 
-        int nota = calcularNota(tentativa);
+        int nota = notaCalculator.calcular(tentativa);
         System.out.println("\n--- Fim da Prova ---");
         System.out.println("Nota (acertos): " + nota + " / " + tentativa.getRespostas().size());
-    }
-
-    public static int calcularNota(Tentativa tentativa) {
-        int acertos = 0;
-        for (var r : tentativa.getRespostas()) {
-            if (r.isCorreta()) acertos++;
-        }
-        return acertos;
     }
 
     static void listarTentativas() {
@@ -192,7 +187,7 @@ public class App {
         for (var t : tentativaRepository.listarTodas()) {
             System.out.printf("#%d | participante=%d | prova=%d | nota=%d/%d%n",
                     t.getId(), t.getParticipanteId(),
-                    t.getProvaId(), calcularNota(t), t.getRespostas().size());
+                    t.getProvaId(), notaCalculator.calcular(t), t.getRespostas().size());
         }
     }
 
