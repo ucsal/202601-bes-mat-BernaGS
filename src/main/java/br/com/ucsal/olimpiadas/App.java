@@ -147,7 +147,8 @@ public class App {
 
         System.out.println("\n--- Início da Prova ---");
 
-        for (var q : questoesDaProva) {
+        // Uso da interface QuestaoInterface (LSP)
+        for (QuestaoInterface q : questoesDaProva) {
             System.out.println("\nQuestão #" + q.getId());
             System.out.println(q.getEnunciado());
 

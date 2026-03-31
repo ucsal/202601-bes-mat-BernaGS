@@ -65,7 +65,17 @@ A classe `App` agora está fechada para modificações em relação à lógica d
 
 ### 3. **L** – *Liskov Substitution Principle* (LSP)
 
+**Aplicação:**  
+O princípio da substituição de Liskov afirma que objetos de uma superclasse devem poder ser substituídos por objetos de suas subclasses sem afetar a corretude do programa. Introduzimos uma interface `QuestaoInterface` que declara os métodos usados pela aplicação, e a classe `Questao` a implementa.
 
+**Mudanças realizadas:**
+- Criada a interface `QuestaoInterface` contendo os métodos `getId()`, `getProvaId()`, `getEnunciado()`, `getAlternativas()`, `isRespostaCorreta()` e `getFenInicial()`.
+- A classe `Questao` foi modificada para implementar essa interface.
+- Em `App`, o loop que percorre as questões agora utiliza o tipo `QuestaoInterface`, demonstrando que o código funciona com qualquer implementação dessa interface.
+- Foi criada uma classe `QuestaoComDica` (estendendo `Questao`) como exemplo de um novo tipo de questão que pode ser adicionado sem modificar o código existente.
+
+**Resultado:**  
+Agora podemos adicionar novos tipos de questão (como questões com dica, questões com imagem, etc.) simplesmente criando novas classes que implementem `QuestaoInterface`, sem alterar a lógica de aplicação de prova.
 
 ---
 
@@ -87,6 +97,7 @@ A classe `App` agora está fechada para modificações em relação à lógica d
 |--------|-----------|---------------------|
 | 1 | refactor: extrair repositórios para gerenciamento de dados (SRP) | `App.java`, `ParticipanteRepository.java`, `ProvaRepository.java`, `QuestaoRepository.java`, `TentativaRepository.java` |
 | 2 | **OCP:** Extração do cálculo de nota para interface | `App.java`, `NotaCalculator.java`, `NotaAcertosCalculator.java` |
+| 3 | **LSP:** Introdução da interface QuestaoInterface e subtipos substituíveis | `Questao.java`, `QuestaoInterface.java`, `QuestaoComDica.java`, `App.java` |
 
 ---
 
