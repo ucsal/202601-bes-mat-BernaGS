@@ -4,21 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class QuestaoRepository {
+public class QuestaoRepository implements QuestaoRepositoryInterface {
     private long proximoId = 1;
     private final List<Questao> questoes = new ArrayList<>();
 
+    @Override
     public Questao salvar(Questao questao) {
         questao.setId(proximoId++);
         questoes.add(questao);
         return questao;
     }
 
-    public List<Questao> listarTodas() {
+    @Override
+    public List<QuestaoBasica> listarTodas() {
         return new ArrayList<>(questoes);
     }
 
-    // Agora retorna List<QuestaoBasica> em vez de List<Questao>
+    @Override
     public List<QuestaoBasica> buscarPorProvaId(long provaId) {
         return questoes.stream()
                 .filter(q -> q.getProvaId() == provaId)

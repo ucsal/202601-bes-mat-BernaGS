@@ -6,16 +6,27 @@ import java.util.Scanner;
 
 public class App {
 
-    static ParticipanteRepository participanteRepository = new ParticipanteRepository();
-    static ProvaRepository provaRepository = new ProvaRepository();
-    static QuestaoRepository questaoRepository = new QuestaoRepository();
-    static TentativaRepository tentativaRepository = new TentativaRepository();
+    private final ParticipanteRepositoryInterface participanteRepository;
+    private final ProvaRepositoryInterface provaRepository;
+    private final QuestaoRepositoryInterface questaoRepository;
+    private final TentativaRepositoryInterface tentativaRepository;
+    private final NotaCalculator notaCalculator;
 
-    private static final NotaCalculator notaCalculator = new NotaAcertosCalculator();
+    private final Scanner in = new Scanner(System.in);
 
-    private static final Scanner in = new Scanner(System.in);
+    public App(ParticipanteRepositoryInterface participanteRepository,
+               ProvaRepositoryInterface provaRepository,
+               QuestaoRepositoryInterface questaoRepository,
+               TentativaRepositoryInterface tentativaRepository,
+               NotaCalculator notaCalculator) {
+        this.participanteRepository = participanteRepository;
+        this.provaRepository = provaRepository;
+        this.questaoRepository = questaoRepository;
+        this.tentativaRepository = tentativaRepository;
+        this.notaCalculator = notaCalculator;
+    }
 
-    public static void main(String[] args) {
+    public void start() {
         seed();
 
         while (true) {
@@ -43,7 +54,7 @@ public class App {
         }
     }
 
-    static void cadastrarParticipante() {
+    private void cadastrarParticipante() {
         System.out.print("Nome: ");
         var nome = in.nextLine();
 
@@ -63,7 +74,7 @@ public class App {
         System.out.println("Participante cadastrado: " + p.getId());
     }
 
-    static void cadastrarProva() {
+    private void cadastrarProva() {
         System.out.print("Título da prova: ");
         var titulo = in.nextLine();
 
@@ -79,7 +90,7 @@ public class App {
         System.out.println("Prova criada: " + prova.getId());
     }
 
-    static void cadastrarQuestao() {
+    private void cadastrarQuestao() {
         if (provaRepository.listarTodos().isEmpty()) {
             System.out.println("não há provas cadastradas");
             return;
@@ -118,7 +129,7 @@ public class App {
         System.out.println("Questão cadastrada: " + q.getId() + " (na prova " + provaId + ")");
     }
 
-    static void aplicarProva() {
+    private void aplicarProva() {
         if (participanteRepository.listarTodos().isEmpty()) {
             System.out.println("cadastre participantes primeiro");
             return;
@@ -134,7 +145,6 @@ public class App {
         var provaId = escolherProva();
         if (provaId == null) return;
 
-        // ISP: QuestaoRepository agora retorna QuestaoBasica
         List<QuestaoBasica> questoesBasicas = questaoRepository.buscarPorProvaId(provaId);
 
         if (questoesBasicas.isEmpty()) {
@@ -193,7 +203,7 @@ public class App {
         System.out.println("Nota (acertos): " + nota + " / " + tentativa.getRespostas().size());
     }
 
-    static void listarTentativas() {
+    private void listarTentativas() {
         System.out.println("\n--- Tentativas ---");
         for (var t : tentativaRepository.listarTodas()) {
             System.out.printf("#%d | participante=%d | prova=%d | nota=%d/%d%n",
@@ -202,7 +212,7 @@ public class App {
         }
     }
 
-    static Long escolherParticipante() {
+    private Long escolherParticipante() {
         System.out.println("\nParticipantes:");
         for (var p : participanteRepository.listarTodos()) {
             System.out.printf("  %d) %s%n", p.getId(), p.getNome());
@@ -222,7 +232,7 @@ public class App {
         }
     }
 
-    static Long escolherProva() {
+    private Long escolherProva() {
         System.out.println("\nProvas:");
         for (var p : provaRepository.listarTodos()) {
             System.out.printf("  %d) %s%n", p.getId(), p.getTitulo());
@@ -242,7 +252,7 @@ public class App {
         }
     }
 
-    static void imprimirTabuleiroFen(String fen) {
+    private void imprimirTabuleiroFen(String fen) {
         String parteTabuleiro = fen.split(" ")[0];
         String[] ranks = parteTabuleiro.split("/");
 
@@ -273,7 +283,7 @@ public class App {
         System.out.println();
     }
 
-    static void seed() {
+    private void seed() {
         var prova = new Prova();
         prova.setTitulo("Olimpíada 2026 • Nível 1 • Prova A");
         provaRepository.salvar(prova);
@@ -290,5 +300,16 @@ public class App {
         q1.setAlternativaCorreta('C');
 
         questaoRepository.salvar(q1);
+    }
+
+    public static void main(String[] args) {
+        ParticipanteRepositoryInterface participanteRepo = new ParticipanteRepository();
+        ProvaRepositoryInterface provaRepo = new ProvaRepository();
+        QuestaoRepositoryInterface questaoRepo = new QuestaoRepository();
+        TentativaRepositoryInterface tentativaRepo = new TentativaRepository();
+        NotaCalculator notaCalc = new NotaAcertosCalculator();
+
+        App app = new App(participanteRepo, provaRepo, questaoRepo, tentativaRepo, notaCalc);
+        app.start();
     }
 }
