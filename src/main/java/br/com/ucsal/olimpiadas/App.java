@@ -1,16 +1,16 @@
 package br.com.ucsal.olimpiadas;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class App {
 
-    // Repositórios
     static ParticipanteRepository participanteRepository = new ParticipanteRepository();
     static ProvaRepository provaRepository = new ProvaRepository();
     static QuestaoRepository questaoRepository = new QuestaoRepository();
     static TentativaRepository tentativaRepository = new TentativaRepository();
 
-    // Calculadora de nota (OCP)
     private static final NotaCalculator notaCalculator = new NotaAcertosCalculator();
 
     private static final Scanner in = new Scanner(System.in);
@@ -134,11 +134,22 @@ public class App {
         var provaId = escolherProva();
         if (provaId == null) return;
 
-        var questoesDaProva = questaoRepository.buscarPorProvaId(provaId);
+        // ISP: QuestaoRepository agora retorna QuestaoBasica
+        List<QuestaoBasica> questoesBasicas = questaoRepository.buscarPorProvaId(provaId);
 
-        if (questoesDaProva.isEmpty()) {
+        if (questoesBasicas.isEmpty()) {
             System.out.println("esta prova não possui questões cadastradas");
             return;
+        }
+
+        // Converte para QuestaoComFen (todas as questões atuais implementam)
+        List<QuestaoComFen> questoesDaProva = new ArrayList<>();
+        for (QuestaoBasica qb : questoesBasicas) {
+            if (!(qb instanceof QuestaoComFen)) {
+                System.out.println("Erro: questão sem FEN encontrada");
+                return;
+            }
+            questoesDaProva.add((QuestaoComFen) qb);
         }
 
         var tentativa = new Tentativa();
@@ -147,8 +158,7 @@ public class App {
 
         System.out.println("\n--- Início da Prova ---");
 
-        // Uso da interface QuestaoInterface (LSP)
-        for (QuestaoInterface q : questoesDaProva) {
+        for (QuestaoComFen q : questoesDaProva) {
             System.out.println("\nQuestão #" + q.getId());
             System.out.println(q.getEnunciado());
 

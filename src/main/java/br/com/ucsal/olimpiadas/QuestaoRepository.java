@@ -2,6 +2,7 @@ package br.com.ucsal.olimpiadas;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class QuestaoRepository {
     private long proximoId = 1;
@@ -17,7 +18,10 @@ public class QuestaoRepository {
         return new ArrayList<>(questoes);
     }
 
-    public List<Questao> buscarPorProvaId(long provaId) {
-        return questoes.stream().filter(q -> q.getProvaId() == provaId).toList();
+    // Agora retorna List<QuestaoBasica> em vez de List<Questao>
+    public List<QuestaoBasica> buscarPorProvaId(long provaId) {
+        return questoes.stream()
+                .filter(q -> q.getProvaId() == provaId)
+                .collect(Collectors.toList());
     }
 }

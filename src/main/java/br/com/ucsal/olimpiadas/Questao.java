@@ -2,7 +2,7 @@ package br.com.ucsal.olimpiadas;
 
 import java.util.Arrays;
 
-public class Questao implements QuestaoInterface {
+public class Questao implements QuestaoComFen {
 
     private long id;
     private long provaId;
